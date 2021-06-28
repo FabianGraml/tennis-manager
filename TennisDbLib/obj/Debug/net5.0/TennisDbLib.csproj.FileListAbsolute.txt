@@ -1,0 +1,15 @@
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\bin\Debug\net5.0\TennisDbLib.deps.json
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\bin\Debug\net5.0\TennisDbLib.runtimeconfig.json
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\bin\Debug\net5.0\TennisDbLib.runtimeconfig.dev.json
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\bin\Debug\net5.0\TennisDbLib.dll
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\bin\Debug\net5.0\ref\TennisDbLib.dll
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\bin\Debug\net5.0\TennisDbLib.pdb
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.AssemblyInfoInputs.cache
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.AssemblyInfo.cs
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.csproj.CoreCompileInputs.cache
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.dll
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\ref\TennisDbLib.dll
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.pdb
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.genruntimeconfig.cache
+C:\Users\Fabian\Desktop\Tennis\TennisDbLib\obj\Debug\net5.0\TennisDbLib.csprojAssemblyReference.cache
