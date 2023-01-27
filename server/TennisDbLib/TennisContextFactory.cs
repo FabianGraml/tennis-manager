@@ -18,6 +18,4 @@ namespace TennisDbLib
             return new TennisContext(optionBuilder.Options);
         }
     }
-
-
 }

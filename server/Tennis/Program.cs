@@ -1,32 +1,60 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Tennis.Services;
 using TennisDbLib;
 
-namespace Tennis
+string corsKey = "mySecretCorsKey";
+var builder = WebApplication.CreateBuilder(args);
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build;
+
+// Add services to the container
+builder.Services.AddScoped<BookingService>();
+builder.Services.AddScoped<PersonService>();
+
+// Pre defined services
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(x =>
 {
-    public class Program
-    {
-        private static TennisContext db = new TennisContext();
-        public static void Main(string[] args)
-        {
-            db.Database.Migrate();
-            int nr = db.Persons.Count();
-            Console.WriteLine($"{nr} Persons");
-            db.Dispose();
-            CreateHostBuilder(args).Build().Run();
-        }
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+    x.SwaggerDoc("v1", new OpenApiInfo { Title = "TestSwagger", Version = "v1" });
+});
+
+// Db Context here
+builder.Services.AddDbContext<TennisContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TennisDb"));
+});
+
+// Cors configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsKey,
+        x => x.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              );
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+app.UseCors(corsKey);
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
