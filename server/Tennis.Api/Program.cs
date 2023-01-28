@@ -4,16 +4,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Tennis.Services;
-using TennisDbLib;
+using System;
+using System.IO;
+using System.Reflection;
+using Tennis.Database.Context;
 
-string corsKey = "mySecretCorsKey";
+string corsKey = "_mySecretCorsKey";
 var builder = WebApplication.CreateBuilder(args);
-var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build;
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 // Add services to the container
-builder.Services.AddScoped<BookingService>();
-builder.Services.AddScoped<PersonService>();
+
 
 // Pre defined services
 builder.Services.AddControllers();
@@ -23,10 +24,18 @@ builder.Services.AddSwaggerGen(x =>
     x.SwaggerDoc("v1", new OpenApiInfo { Title = "TestSwagger", Version = "v1" });
 });
 
+// Configure appsettings.json DbContext
+string baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+AppDomain.CurrentDomain.SetData("DataDirectory", baseDirectory);
+string connectionString = configuration.GetConnectionString("TennisDb")
+    .Replace("|DataDirectory|", AppDomain.CurrentDomain
+    .GetData("DataDirectory")
+    .ToString());
+
 // Db Context here
 builder.Services.AddDbContext<TennisContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TennisDb"));
+    options.UseSqlServer(connectionString);
 });
 
 // Cors configuration
@@ -41,6 +50,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Migrate Database
+// Apply Migrations using this command
+// Add-Migration [Name] -StartupProject Tennis.Api -Context TennisContext -Project Tennis.Database
+using var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<TennisContext>();
+context.Database.Migrate();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -48,7 +64,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors(corsKey);
+
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();

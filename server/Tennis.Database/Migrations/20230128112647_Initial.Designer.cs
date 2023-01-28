@@ -4,28 +4,33 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TennisDbLib;
+using Tennis.Database.Context;
 
-namespace TennisDbLib.Migrations
+#nullable disable
+
+namespace Tennis.Database.Migrations
 {
     [DbContext(typeof(TennisContext))]
-    [Migration("20210607091312_DbCreation")]
-    partial class DbCreation
+    [Migration("20230128112647_Initial")]
+    partial class Initial
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            modelBuilder.Entity("TennisDbLib.Booking", b =>
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Tennis.Database.Models.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
@@ -49,43 +54,28 @@ namespace TennisDbLib.Migrations
                         new
                         {
                             Id = 1,
-                            DayOfWeek = 1,
+                            DayOfWeek = 4,
                             Hour = 12,
                             PersonId = 1,
-                            Week = 22
+                            Week = 6
                         },
                         new
                         {
                             Id = 2,
-                            DayOfWeek = 4,
-                            Hour = 12,
-                            PersonId = 3,
-                            Week = 22
-                        },
-                        new
-                        {
-                            Id = 3,
                             DayOfWeek = 2,
-                            Hour = 14,
+                            Hour = 15,
                             PersonId = 2,
-                            Week = 22
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DayOfWeek = 2,
-                            Hour = 11,
-                            PersonId = 2,
-                            Week = 22
+                            Week = 6
                         });
                 });
 
-            modelBuilder.Entity("TennisDbLib.Person", b =>
+            modelBuilder.Entity("Tennis.Database.Models.Person", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -104,29 +94,22 @@ namespace TennisDbLib.Migrations
                         new
                         {
                             Id = 1,
-                            Age = 66,
-                            Firstname = "Hans",
-                            Lastname = "Huber"
+                            Age = 28,
+                            Firstname = "John",
+                            Lastname = "Doe"
                         },
                         new
                         {
                             Id = 2,
-                            Age = 55,
-                            Firstname = "Kurt",
-                            Lastname = "Mayr"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Age = 44,
-                            Firstname = "Susi",
-                            Lastname = "Berger"
+                            Age = 24,
+                            Firstname = "Jane",
+                            Lastname = "Doe"
                         });
                 });
 
-            modelBuilder.Entity("TennisDbLib.Booking", b =>
+            modelBuilder.Entity("Tennis.Database.Models.Booking", b =>
                 {
-                    b.HasOne("TennisDbLib.Person", "Person")
+                    b.HasOne("Tennis.Database.Models.Person", "Person")
                         .WithMany("Bookings")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -135,7 +118,7 @@ namespace TennisDbLib.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("TennisDbLib.Person", b =>
+            modelBuilder.Entity("Tennis.Database.Models.Person", b =>
                 {
                     b.Navigation("Bookings");
                 });

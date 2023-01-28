@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tennis.Database\Tennis.Database.csproj" />
+    <ProjectReference Include="..\Tennis.Model\Tennis.Model.csproj" />
+    <ProjectReference Include="..\Tennis.Repository\Tennis.Repository.csproj" />
+    <ProjectReference Include="..\Tennis.Service\Tennis.Service.csproj" />
+  </ItemGroup>
+
+</Project>

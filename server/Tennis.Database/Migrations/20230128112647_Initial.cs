@@ -1,9 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace TennisDbLib.Migrations
+#nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace Tennis.Database.Migrations
 {
-    public partial class DbCreation : Migration
+    /// <inheritdoc />
+    public partial class Initial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -46,27 +52,19 @@ namespace TennisDbLib.Migrations
             migrationBuilder.InsertData(
                 table: "Persons",
                 columns: new[] { "Id", "Age", "Firstname", "Lastname" },
-                values: new object[] { 1, 66, "Hans", "Huber" });
-
-            migrationBuilder.InsertData(
-                table: "Persons",
-                columns: new[] { "Id", "Age", "Firstname", "Lastname" },
-                values: new object[] { 2, 55, "Kurt", "Mayr" });
-
-            migrationBuilder.InsertData(
-                table: "Persons",
-                columns: new[] { "Id", "Age", "Firstname", "Lastname" },
-                values: new object[] { 3, 44, "Susi", "Berger" });
+                values: new object[,]
+                {
+                    { 1, 28, "John", "Doe" },
+                    { 2, 24, "Jane", "Doe" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Bookings",
                 columns: new[] { "Id", "DayOfWeek", "Hour", "PersonId", "Week" },
                 values: new object[,]
                 {
-                    { 1, 1, 12, 1, 22 },
-                    { 3, 2, 14, 2, 22 },
-                    { 4, 2, 11, 2, 22 },
-                    { 2, 4, 12, 3, 22 }
+                    { 1, 4, 12, 1, 6 },
+                    { 2, 2, 15, 2, 6 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -75,6 +73,7 @@ namespace TennisDbLib.Migrations
                 column: "PersonId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
