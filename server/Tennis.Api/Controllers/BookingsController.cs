@@ -2,6 +2,6 @@
 namespace Tennis.Controllers;
 [ApiController]
 [Route("api/booking")]
-public class BookingsController : ControllerBase
+public class BookingsController : Controller
 {
 }
