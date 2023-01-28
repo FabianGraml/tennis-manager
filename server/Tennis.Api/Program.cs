@@ -30,11 +30,11 @@ builder.Services.AddSwaggerGen(x =>
 });
 
 // Configure appsettings.json DbContext
-string baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+string baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 AppDomain.CurrentDomain.SetData("DataDirectory", baseDirectory);
-string connectionString = configuration.GetConnectionString("TennisDb")
+string connectionString = configuration.GetConnectionString("TennisDb")!
     .Replace("|DataDirectory|", AppDomain.CurrentDomain
-    .GetData("DataDirectory")
+    .GetData("DataDirectory")!
     .ToString());
 
 // Db Context here
@@ -58,7 +58,7 @@ var app = builder.Build();
 // Migrate Database
 // Apply Migrations using this command
 // Add-Migration [Name] -StartupProject Tennis.Api -Context TennisContext -Project Tennis.Database
-using var scope = app.Services.CreateScope();
+var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<TennisContext>();
 context.Database.Migrate();
 
