@@ -60,7 +60,7 @@ var app = builder.Build();
 // Add-Migration [Name] -StartupProject Tennis.Api -Context TennisContext -Project Tennis.Database
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<TennisContext>();
-context.Database.Migrate();
+context.Database.Migrate(); 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
