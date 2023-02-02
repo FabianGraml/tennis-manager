@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using Tennis.Database.Models;
+﻿using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 using Tennis.Repository.UnitOfWork;
 namespace Tennis.Service.BookingService;
@@ -72,7 +70,7 @@ public class BookingService : IBookingService
     public async Task<BookingDTO.BookingResponseDTO?> GetById(int id)
     {
         Booking? booking = await _unitOfWork.BookingRepository.GetAsync(x => x.Id == id);
-        if(booking == null)
+        if (booking == null)
         {
             throw new ArgumentException($"Couldn't find booking with ID {id}");
         }

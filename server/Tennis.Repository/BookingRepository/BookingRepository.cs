@@ -6,7 +6,7 @@ using Tennis.Repository.GenericRepository;
 namespace Tennis.Repository.BookingRepository;
 public class BookingRepository : GenericRepository<Booking>, IBookingRepository
 {
-    public BookingRepository(TennisContext dbContext) : base(dbContext) {}
+    public BookingRepository(TennisContext dbContext) : base(dbContext) { }
     public async Task<IEnumerable<Booking>> GetAllIncludingAsync(Expression<Func<Booking, bool>> expression, Expression<Func<object, bool>>[] includes, CancellationToken cancellationToken = default)
     {
         IQueryable<Booking> query = _dbContext.Set<Booking>();
