@@ -6,5 +6,5 @@ public class Booking
     public int DayOfWeek { get; set; }
     public int Hour { get; set; }
     public int PersonId { get; set; }
-    public virtual Person Person { get; set; }
+    public virtual Person? Person { get; set; }
 }

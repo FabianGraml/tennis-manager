@@ -1,11 +1,5 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.IO;
 using System.Reflection;
 using Tennis.Database.Context;
 using Tennis.Repository.UnitOfWork;
@@ -19,7 +13,7 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").B
 // Add services to the container
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPersonService, PersonService>();
-//builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Pre defined services
 builder.Services.AddControllers();
@@ -60,7 +54,7 @@ var app = builder.Build();
 // Add-Migration [Name] -StartupProject Tennis.Api -Context TennisContext -Project Tennis.Database
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<TennisContext>();
-context.Database.Migrate(); 
+context.Database.Migrate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

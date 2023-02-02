@@ -9,13 +9,13 @@ public class PersonService : IPersonService
     {
         _unitOfWork = unitOfWork;
     }
-    public async Task AddPerson(PersonDTO.PersonRequestDTO personDTO)
+    public async Task AddPerson(PersonDTO.PersonRequestDTO? personDTO)
     {
-        Person person = new Person
+        Person? person = new Person
         {
-            Firstname = personDTO.Firstname,
-            Lastname = personDTO.Lastname,
-            Age = personDTO.Age,
+            Firstname = personDTO?.Firstname,
+            Lastname = personDTO?.Lastname,
+            Age = personDTO == null ? -1 : personDTO.Age,
         };
         await _unitOfWork.PersonRepository.AddAsync(person);
         await _unitOfWork.SaveAsync();
@@ -30,7 +30,7 @@ public class PersonService : IPersonService
         _unitOfWork.PersonRepository.Remove(person);
         await _unitOfWork.SaveAsync();
     }
-    public async Task<IEnumerable<PersonDTO.PersonResponseDTO>> GetAll()
+    public async Task<IEnumerable<PersonDTO.PersonResponseDTO?>> GetAll()
     {
         IEnumerable<Person> persons = 
             await _unitOfWork.PersonRepository.GetAllAsync();
@@ -42,7 +42,7 @@ public class PersonService : IPersonService
             Age = x.Age,
         }).ToList();
     }
-    public async Task<PersonDTO.PersonResponseDTO> GetById(int id)
+    public async Task<PersonDTO.PersonResponseDTO?> GetById(int id)
     {
         Person? person = await _unitOfWork.PersonRepository.GetAsync(x => x.Id == id);
         if (person == null)
@@ -57,16 +57,16 @@ public class PersonService : IPersonService
             Age = person.Age,
         };
     }
-    public async Task UpdatePerson(int id, PersonDTO.PersonRequestDTO personDTO)
+    public async Task UpdatePerson(int id, PersonDTO.PersonRequestDTO? personDTO)
     {
         Person? person = await _unitOfWork.PersonRepository.GetAsync(x => x.Id == id);
         if (person == null)
         {
             throw new ArgumentException($"Person with Id {id} could not be found");
         }
-        person.Firstname = personDTO.Firstname;
-        person.Lastname = personDTO.Lastname;   
-        personDTO.Age = personDTO.Age;
+        person.Firstname = personDTO?.Firstname == null ? person.Firstname : personDTO.Firstname;
+        person.Lastname = personDTO?.Lastname == null ? person.Lastname : personDTO.Lastname;   
+        person.Age = personDTO?.Age == null ? person.Age : personDTO.Age;
         _unitOfWork.PersonRepository.Update(person);
         await _unitOfWork.SaveAsync();
     }
