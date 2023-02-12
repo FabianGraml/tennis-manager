@@ -6,7 +6,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     protected readonly TennisContext _dbContext;
     private readonly DbSet<T> _entitySet;
-
     public GenericRepository(TennisContext dbContext)
     {
         _dbContext = dbContext;

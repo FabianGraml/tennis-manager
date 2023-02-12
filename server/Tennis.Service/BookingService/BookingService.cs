@@ -1,4 +1,6 @@
-﻿using Tennis.Database.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 using Tennis.Repository.UnitOfWork;
 namespace Tennis.Service.BookingService;
@@ -51,7 +53,7 @@ public class BookingService : IBookingService
     }
     public async Task<IEnumerable<BookingDTO.BookingResponseDTO?>> GetBookingsForPerson(int personId)
     {
-        IEnumerable<Booking>? bookings = await _unitOfWork.BookingRepository.GetAllAsync(x => x.PersonId == personId);
+        IEnumerable<Booking>? bookings = await _unitOfWork.BookingRepository.GetAllIncludingAsync(x => x.PersonId == personId, x => x.Include(y => y.Person)!);
         return bookings.Select(x => new BookingDTO.BookingResponseDTO
         {
             Id = x.Id,
