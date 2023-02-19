@@ -2,9 +2,9 @@
 using Tennis.Model.DTOs;
 using Tennis.Service.PersonService;
 namespace Tennis.Controllers;
-[ApiController]
 [Route("api/person")]
-public class PersonsController : Controller
+[ApiController]
+public class PersonsController : ControllerBase
 {
     private readonly IPersonService _personService;
     public PersonsController(IPersonService personService)

@@ -2,9 +2,9 @@
 using Tennis.Model.DTOs;
 using Tennis.Service.BookingService;
 namespace Tennis.Controllers;
-[ApiController]
 [Route("api/booking")]
-public class BookingsController : Controller
+[ApiController]
+public class BookingsController : ControllerBase
 {
     private readonly IBookingService _bookingService;
     public BookingsController(IBookingService bookingService)
