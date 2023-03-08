@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Reflection;
+using System.Text;
 using Tennis.Database.Context;
 using Tennis.Repository.UnitOfWork;
+using Tennis.Service.AuthService;
 using Tennis.Service.BookingService;
 using Tennis.Service.PersonService;
 
@@ -15,6 +19,7 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").B
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Pre defined services
 builder.Services.AddControllers();
@@ -39,7 +44,26 @@ builder.Services.AddDbContext<TennisContext>(options =>
 });
 
 // Jwt stuff
-
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecretKey"]!))
+    };
+});
 
 // Cors configuration
 builder.Services.AddCors(options =>

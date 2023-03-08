@@ -1,5 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Tennis.Database.Models;
@@ -7,15 +11,14 @@ using Tennis.Model.DTOs;
 using Tennis.Model.Helpers;
 using Tennis.Repository.UnitOfWork;
 
-namespace Tennis.Service.UserService;
-public class UserService : IUserService
+namespace Tennis.Service.AuthService;
+public class AuthService : IAuthService
 {
     private readonly IUnitOfWork _unitOfWork;
-    public UserService(IUnitOfWork unitOfWork)
+    public AuthService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
-
     public async Task<User> Register(RegisterDTO registerDTO)
     {
         CreatePasswordHash(registerDTO?.Password!, out byte[] passwordHash, out byte[] passwordSalt);
@@ -30,11 +33,12 @@ public class UserService : IUserService
             RoleId = 2,
         };
         await _unitOfWork.UserRepository.AddAsync(user);
+        await _unitOfWork.SaveAsync();
         return user;
     }
     public async Task<TokenDTO> Login(LoginDTO loginDTO)
     {
-        User? user = await _unitOfWork.UserRepository.GetAsync(x => x.Email == loginDTO.Email);
+        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Email == loginDTO.Email, includes: q => q.Include(u => u.Role)!);
         if (user == null)
         {
             throw new ApplicationException("User cannot be found");
@@ -43,34 +47,53 @@ public class UserService : IUserService
         {
             throw new ApplicationException("Wrong password");
         }
+        var refreshToken = await GenerateRefreshToken();
+        await SetRefreshToken(refreshToken, user!);
         TokenDTO tokenDTO = new()
         {
-            JwtToken = await CreateToken(user!)
+            JwtToken = await CreateToken(user!),
+            RefreshToken = refreshToken.Token,
         };
-
         return tokenDTO;
     }
-    public Task<string> RefreshToken()
+    public async Task<TokenDTO> RefreshToken(string refreshToken, string jwtToken)
     {
-        throw new NotImplementedException();
+        JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+        JwtSecurityToken jwtSecurityToken = handler.ReadJwtToken(jwtToken);
+
+        string userId = jwtSecurityToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Id == int.Parse(userId), includes: q => q.Include(u => u.Role)!);
+
+        if (!user!.RefreshToken.Equals(refreshToken))
+        {
+            throw new ApplicationException("Invalid Refresh Token");
+        }
+        else if (user.TokenExpires < DateTime.Now)
+        {
+            throw new ApplicationException("Token expired");
+        }
+        string token = await CreateToken(user);
+        var newRefreshToken = await GenerateRefreshToken();
+        await SetRefreshToken(newRefreshToken, user);
+        return new TokenDTO
+        {
+            JwtToken = token,
+            RefreshToken = newRefreshToken.Token
+        };
     }
     private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         var hmac = new HMACSHA512();
-
         passwordSalt = hmac.Key;
         passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-
     }
     private static Task<bool> VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
         var hmac = new HMACSHA512(passwordSalt);
-
         var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         return Task.FromResult(computedHash.SequenceEqual(passwordHash));
-
     }
-    private async Task<string> CreateToken(User user)
+    private Task<string> CreateToken(User user)
     {
         List<Claim> claims = new()
                 {
@@ -79,7 +102,7 @@ public class UserService : IUserService
                     new Claim(ClaimTypes.Email, user?.Email!),
                 };
 
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("testete"));
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("MySecretKedfsadfdy"));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -89,9 +112,8 @@ public class UserService : IUserService
             signingCredentials: creds);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        RefreshToken refreshToken = await GenerateRefreshToken();
-        await SetRefreshToken(refreshToken, user!);
-        return jwt;
+
+        return Task.FromResult(jwt);
     }
     private static Task<RefreshToken> GenerateRefreshToken()
     {

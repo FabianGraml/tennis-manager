@@ -1,10 +1,10 @@
 ﻿using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 
-namespace Tennis.Service.UserService;
-public interface IUserService
+namespace Tennis.Service.AuthService;
+public interface IAuthService
 {
     Task<User> Register(RegisterDTO registerDTO);
     Task<TokenDTO> Login(LoginDTO loginDTO);
-    Task<string> RefreshToken();
+    Task<TokenDTO> RefreshToken(string refreshToken, string jwtToken);
 }

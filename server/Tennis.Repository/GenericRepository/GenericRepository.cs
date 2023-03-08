@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 using Tennis.Database.Context;
 namespace Tennis.Repository.GenericRepository;
@@ -23,4 +24,30 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         => _dbContext.Remove(entity);
     public void Update(T entity)
         => _dbContext.Update(entity);
+    public async Task<IReadOnlyList<T>?> GetAllIncludingAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IIncludableQueryable<T, object>> includes)
+    {
+        IQueryable<T> query = _dbContext.Set<T>();
+        if (includes != null)
+        {
+            query = includes(query);
+        }
+        if (expression != null)
+        {
+            query = query.Where(expression);
+        }
+        return query != null ? await query.ToListAsync() : null;
+    }
+    public async Task<T?> GetIncludingAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IIncludableQueryable<T, object>> includes)
+    {
+        IQueryable<T> query = _dbContext.Set<T>();
+        if (includes != null)
+        {
+            query = includes(query);
+        }
+        if (expression != null)
+        {
+            query = query.Where(expression);
+        }
+        return await query.FirstOrDefaultAsync();
+    }
 }

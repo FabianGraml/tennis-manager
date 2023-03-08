@@ -5,6 +5,16 @@ public static class SeedExtension
 {
     public static void Seed(this ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<UserRole>().HasData(new UserRole
+        {
+            Id = 1,
+            RoleName = "Admin",
+        });
+        modelBuilder.Entity<UserRole>().HasData(new UserRole
+        {
+            Id = 2,
+            RoleName = "User",
+        });
         modelBuilder.Entity<Person>().HasData(new Person
         {
             Id = 1,
