@@ -11,15 +11,15 @@ using Tennis.Database.Context;
 namespace Tennis.Database.Migrations
 {
     [DbContext(typeof(TennisContext))]
-    [Migration("20230128112647_Initial")]
-    partial class Initial
+    [Migration("20230308130130_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

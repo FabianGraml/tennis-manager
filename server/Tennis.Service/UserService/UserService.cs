@@ -19,13 +19,12 @@ public class UserService : IUserService
     public async Task<User> Register(RegisterDTO registerDTO)
     {
         CreatePasswordHash(registerDTO?.Password!, out byte[] passwordHash, out byte[] passwordSalt);
-        User user = new User()
+        User user = new()
         {
             Firstname = registerDTO?.Firstname,
             Lastname = registerDTO?.Lastname,
             Email = registerDTO?.Email,
             CreatedAt = DateTime.Now,
-            IsActivated = false,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             RoleId = 2,
@@ -44,7 +43,7 @@ public class UserService : IUserService
         {
             throw new ApplicationException("Wrong password");
         }
-        TokenDTO tokenDTO = new TokenDTO()
+        TokenDTO tokenDTO = new()
         {
             JwtToken = await CreateToken(user!)
         };
@@ -55,25 +54,25 @@ public class UserService : IUserService
     {
         throw new NotImplementedException();
     }
-    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
-        using (var hmac = new HMACSHA512())
-        {
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        }
+        var hmac = new HMACSHA512();
+
+        passwordSalt = hmac.Key;
+        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
     }
-    private Task<bool> VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    private static Task<bool> VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
-        using (var hmac = new HMACSHA512(passwordSalt))
-        {
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            return Task.FromResult(computedHash.SequenceEqual(passwordHash));
-        }
+        var hmac = new HMACSHA512(passwordSalt);
+
+        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        return Task.FromResult(computedHash.SequenceEqual(passwordHash));
+
     }
     private async Task<string> CreateToken(User user)
     {
-        List<Claim> claims = new List<Claim>
+        List<Claim> claims = new()
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Role, user.Role?.RoleName!),
@@ -94,7 +93,7 @@ public class UserService : IUserService
         await SetRefreshToken(refreshToken, user!);
         return jwt;
     }
-    private Task<RefreshToken> GenerateRefreshToken()
+    private static Task<RefreshToken> GenerateRefreshToken()
     {
         var refreshToken = new RefreshToken
         {
@@ -105,9 +104,9 @@ public class UserService : IUserService
         return Task.FromResult(refreshToken);
     }
 
-    private async Task SetRefreshToken(RefreshToken newRefreshToken, User user)
+    private async Task SetRefreshToken(RefreshToken? newRefreshToken, User user)
     {
-        user.RefreshToken = newRefreshToken.Token;
+        user.RefreshToken = newRefreshToken!.Token!;
         user.TokenCreated = newRefreshToken.Created;
         user.TokenExpires = newRefreshToken.Expires;
         _unitOfWork.UserRepository.Update(user);

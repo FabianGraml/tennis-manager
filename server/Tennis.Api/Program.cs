@@ -1,4 +1,3 @@
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System;
@@ -40,11 +39,7 @@ builder.Services.AddDbContext<TennisContext>(options =>
 });
 
 // Jwt stuff
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
-    options.Password.RequireUppercase = true; // on production add more secured options
-    options.Password.RequireDigit = true;
-    options.SignIn.RequireConfirmedEmail = true;
-}).AddEntityFrameworkStores<TennisContext>().AddDefaultTokenProviders();
+
 
 // Cors configuration
 builder.Services.AddCors(options =>
