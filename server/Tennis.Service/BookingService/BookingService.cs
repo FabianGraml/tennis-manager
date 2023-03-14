@@ -34,7 +34,7 @@ public class BookingService : IBookingService
     }
     public async Task<IEnumerable<BookingDTO.BookingResponseDTO?>> GetAll()
     {
-        IEnumerable<Booking>? bookings = await _unitOfWork.BookingRepository.GetAllAsync();
+        IEnumerable<Booking>? bookings = await _unitOfWork.BookingRepository.GetAllIncludingAsync(null!, x => x.Include(y => y.User)!);
         return bookings.Select(x => new BookingDTO.BookingResponseDTO
         {
             Id = x.Id,
@@ -74,7 +74,7 @@ public class BookingService : IBookingService
     }
     public async Task<BookingDTO.BookingResponseDTO?> GetById(int id)
     {
-        Booking? booking = await _unitOfWork.BookingRepository.GetAsync(x => x.Id == id);
+        Booking? booking = await _unitOfWork.BookingRepository.GetIncludingAsync(x => x.Id == id, x => x.Include(y => y.User));
         if (booking == null)
         {
             throw new ArgumentException($"Couldn't find booking with ID {id}");
