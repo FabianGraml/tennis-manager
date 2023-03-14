@@ -12,7 +12,7 @@ using Tennis.Database.Context;
 namespace Tennis.Database.Migrations
 {
     [DbContext(typeof(TennisContext))]
-    [Migration("20230308134916_Init")]
+    [Migration("20230314145703_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -39,7 +39,7 @@ namespace Tennis.Database.Migrations
                     b.Property<int>("Hour")
                         .HasColumnType("int");
 
-                    b.Property<int>("PersonId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int>("Week")
@@ -47,65 +47,9 @@ namespace Tennis.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DayOfWeek = 4,
-                            Hour = 12,
-                            PersonId = 1,
-                            Week = 6
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DayOfWeek = 2,
-                            Hour = 15,
-                            PersonId = 2,
-                            Week = 6
-                        });
-                });
-
-            modelBuilder.Entity("Tennis.Database.Models.Person", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Firstname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Age = 28,
-                            Firstname = "John",
-                            Lastname = "Doe"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Age = 24,
-                            Firstname = "Jane",
-                            Lastname = "Doe"
-                        });
                 });
 
             modelBuilder.Entity("Tennis.Database.Models.User", b =>
@@ -184,13 +128,13 @@ namespace Tennis.Database.Migrations
 
             modelBuilder.Entity("Tennis.Database.Models.Booking", b =>
                 {
-                    b.HasOne("Tennis.Database.Models.Person", "Person")
+                    b.HasOne("Tennis.Database.Models.User", "User")
                         .WithMany("Bookings")
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Person");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Tennis.Database.Models.User", b =>
@@ -204,7 +148,7 @@ namespace Tennis.Database.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Tennis.Database.Models.Person", b =>
+            modelBuilder.Entity("Tennis.Database.Models.User", b =>
                 {
                     b.Navigation("Bookings");
                 });

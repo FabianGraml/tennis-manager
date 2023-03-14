@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 using Tennis.Repository.UnitOfWork;
@@ -13,12 +12,12 @@ public class BookingService : IBookingService
     }
     public async Task AddBooking(BookingDTO.BookingRequestDTO? bookingDTO)
     {
-        Booking? booking = new Booking
+        Booking? booking = new()
         {
             Week = bookingDTO?.Week == null ? -1 : bookingDTO.Week,
             DayOfWeek = bookingDTO?.DayOfWeek == null ? -1 : bookingDTO.DayOfWeek,
             Hour = bookingDTO?.Hour == null ? -1 : bookingDTO.Hour,
-            PersonId = bookingDTO?.PersonId == null ? -1 : bookingDTO.PersonId,
+            UserId = bookingDTO?.UserId == null ? -1 : bookingDTO.UserId,
         };
         await _unitOfWork.BookingRepository.AddAsync(booking);
         await _unitOfWork.SaveAsync();
@@ -42,30 +41,34 @@ public class BookingService : IBookingService
             Week = x.Week,
             DayOfWeek = x.DayOfWeek,
             Hour = x.Hour,
-            Person = new PersonDTO.PersonResponseDTO
+            User = new UserDTO.UserResponseDTO()
             {
-                Id = x.Person?.Id == null ? -1 : x.Person.Id,
-                Age = x.Person?.Age == null ? -1 : x.Person.Age,
-                Firstname = x.Person?.Firstname,
-                Lastname = x.Person?.Lastname,
+                Id = x.User?.Id == null ? -1 : x.User.Id,
+                Firstname = x.User?.Firstname,
+                Lastname = x.User?.Lastname,
+                Email = x.User?.Email,
             }
         });
     }
-    public async Task<IEnumerable<BookingDTO.BookingResponseDTO?>> GetBookingsForPerson(int personId)
+    public async Task<IEnumerable<BookingDTO.BookingResponseDTO?>> GetBookingsForPerson(int userId)
     {
-        IEnumerable<Booking>? bookings = await _unitOfWork.BookingRepository.GetAllIncludingAsync(x => x.PersonId == personId, x => x.Include(y => y.Person)!);
+        IEnumerable<Booking>? bookings = await _unitOfWork.BookingRepository.GetAllIncludingAsync(x => x.UserId == userId, x => x.Include(y => y.User)!);
+        if (bookings == null)
+        {
+            throw new ApplicationException("Cannot find any bookings");
+        }
         return bookings.Select(x => new BookingDTO.BookingResponseDTO
         {
             Id = x.Id,
             Week = x.Week,
             DayOfWeek = x.DayOfWeek,
             Hour = x.Hour,
-            Person = new PersonDTO.PersonResponseDTO
+            User = new UserDTO.UserResponseDTO
             {
-                Id = x.Person?.Id == null ? -1 : x.Person.Id,
-                Age = x.Person?.Age == null ? -1 : x.Person.Age,
-                Firstname = x.Person?.Firstname,
-                Lastname = x.Person?.Lastname,
+                Id = x.User?.Id == null ? -1 : x.User.Id,
+                Firstname = x.User?.Firstname,
+                Lastname = x.User?.Lastname,
+                Email = x.User?.Email,
             }
         });
     }
@@ -82,12 +85,12 @@ public class BookingService : IBookingService
             DayOfWeek = booking.DayOfWeek,
             Hour = booking.Hour,
             Week = booking.Week,
-            Person = new PersonDTO.PersonResponseDTO
+            User = new UserDTO.UserResponseDTO
             {
-                Id = booking.Person?.Id == null ? -1 : booking.Person.Id,
-                Age = booking.Person?.Age == null ? -1 : booking.Person.Age,
-                Firstname = booking.Person?.Firstname,
-                Lastname = booking.Person?.Lastname,
+                Id = booking.User?.Id == null ? -1 : booking.User.Id,
+                Firstname = booking.User?.Firstname,
+                Lastname = booking.User?.Lastname,
+                Email = booking.User?.Email,
             }
         };
     }
@@ -101,7 +104,7 @@ public class BookingService : IBookingService
         booking.Week = bookingDTO?.Week == null ? -1 : booking.Week;
         booking.DayOfWeek = bookingDTO?.DayOfWeek == null ? -1 : booking.DayOfWeek;
         booking.Hour = bookingDTO?.Hour == null ? -1 : booking.Hour;
-        booking.PersonId = bookingDTO?.PersonId == null ? -1 : bookingDTO.PersonId;
+        booking.UserId = bookingDTO?.UserId == null ? -1 : bookingDTO.UserId;
         _unitOfWork.BookingRepository.Update(booking);
         await _unitOfWork.SaveAsync();
     }

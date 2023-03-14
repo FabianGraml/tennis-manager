@@ -6,9 +6,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 {
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
-        builder.HasOne(x => x.Person)
+        builder.HasOne(x => x.User)
             .WithMany(x => x.Bookings)
-            .HasForeignKey(x => x.PersonId);
+            .HasForeignKey(x => x.UserId);
         builder.Property(x => x.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
@@ -16,7 +16,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
             .IsRequired();
         builder.Property(x => x.DayOfWeek)
             .IsRequired();
-        builder.Property(x => x.PersonId)
+        builder.Property(x => x.UserId)
             .IsRequired();
         builder.Property(x => x.Hour)
            .IsRequired();

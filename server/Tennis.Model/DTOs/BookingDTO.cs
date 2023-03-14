@@ -7,13 +7,13 @@ public class BookingDTO
         public int Week { get; set; }
         public int DayOfWeek { get; set; }
         public int Hour { get; set; }
-        public PersonDTO.PersonResponseDTO? Person { get; set; }
+        public UserDTO.UserResponseDTO? User { get; set; }
     }
     public class BookingRequestDTO
     {
         public int Week { get; set; }
         public int DayOfWeek { get; set; }
         public int Hour { get; set; }
-        public int PersonId { get; set; }
+        public int UserId { get; set; }
     }
 }

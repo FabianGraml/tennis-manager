@@ -9,7 +9,6 @@ using Tennis.Database.Context;
 using Tennis.Repository.UnitOfWork;
 using Tennis.Service.AuthService;
 using Tennis.Service.BookingService;
-using Tennis.Service.PersonService;
 
 string corsKey = "_mySecretCorsKey";
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +16,6 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").B
 
 // Add services to the container
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 

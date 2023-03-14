@@ -1,6 +1,5 @@
 ﻿using Tennis.Database.Context;
 using Tennis.Repository.BookingRepository;
-using Tennis.Repository.PersonRepository;
 using Tennis.Repository.UserRepository;
 
 namespace Tennis.Repository.UnitOfWork;
@@ -8,14 +7,12 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly TennisContext _dbContext;
     public IBookingRepository BookingRepository { get; set; }
-    public IPersonRepository PersonRepository { get; set; }
     public IUserRepository UserRepository { get; set; }
 
     public UnitOfWork(TennisContext dbContext)
     {
         _dbContext = dbContext;
         BookingRepository = new BookingRepository.BookingRepository(dbContext);
-        PersonRepository = new PersonRepository.PersonRepository(dbContext);
         UserRepository = new UserRepository.UserRepository(dbContext);
     }
     public async Task RollbackAsync()

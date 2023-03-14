@@ -1,16 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 using Tennis.Model.Helpers;
 using Tennis.Repository.UnitOfWork;
-
 namespace Tennis.Service.AuthService;
 public class AuthService : IAuthService
 {
