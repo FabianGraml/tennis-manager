@@ -7,17 +7,21 @@ using System.Reflection;
 using System.Text;
 using Tennis.Database.Context;
 using Tennis.Repository.UnitOfWork;
+using Tennis.Service.AppSettingsService;
+using Tennis.Service.AppSettingsService.AppSettings;
 using Tennis.Service.AuthService;
 using Tennis.Service.BookingService;
 
 string corsKey = "_mySecretCorsKey";
 var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+builder.Services.Configure<AppSettingsConfig>(builder.Configuration.GetSection("Settings"));
 
 // Add services to the container
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAppSettingsService<AppSettingsConfig>, AppSettingsService<AppSettingsConfig>>();
 
 // Pre defined services
 builder.Services.AddControllers();
@@ -59,7 +63,9 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ClockSkew = TimeSpan.Zero,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecretKey"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            builder.Configuration.GetSection("Settings").GetValue<string>("JwtSecretKey")
+            ))
     };
 });
 

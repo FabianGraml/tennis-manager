@@ -7,13 +7,18 @@ using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 using Tennis.Model.Helpers;
 using Tennis.Repository.UnitOfWork;
+using Tennis.Service.AppSettingsService;
+using Tennis.Service.AppSettingsService.AppSettings;
+
 namespace Tennis.Service.AuthService;
 public class AuthService : IAuthService
 {
     private readonly IUnitOfWork _unitOfWork;
-    public AuthService(IUnitOfWork unitOfWork)
+    private readonly IAppSettingsService<AppSettingsConfig> _settingsService;
+    public AuthService(IUnitOfWork unitOfWork, IAppSettingsService<AppSettingsConfig> settingsService)
     {
         _unitOfWork = unitOfWork;
+        _settingsService = settingsService;
     }
     public async Task<User> Register(RegisterDTO registerDTO)
     {
@@ -98,30 +103,29 @@ public class AuthService : IAuthService
                     new Claim(ClaimTypes.Email, user?.Email!),
                 };
 
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("MySecretKedfsadfdy"));
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_settingsService.GetSettings().JwtSecretKey!));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddDays(1),
+            expires: DateTime.Now.AddMinutes(int.Parse(_settingsService.GetSettings().JwtValid!)),
             signingCredentials: creds);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
         return Task.FromResult(jwt);
     }
-    private static Task<RefreshToken> GenerateRefreshToken()
+    private Task<RefreshToken> GenerateRefreshToken()
     {
         var refreshToken = new RefreshToken
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.Now.AddDays(7),
+            Expires = DateTime.Now.AddMinutes(int.Parse(_settingsService.GetSettings().RefreshTokenValid!)),
             Created = DateTime.Now
         };
         return Task.FromResult(refreshToken);
     }
-
     private async Task SetRefreshToken(RefreshToken? newRefreshToken, User user)
     {
         user.RefreshToken = newRefreshToken!.Token!;
