@@ -25,9 +25,9 @@ namespace Tennis.Api.Controllers
             return Ok(await _authService.Login(loginDTO));
         }
         [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenDTO? tokenDTO)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO? refreshTokenDTO)
         {
-            return Ok(await _authService.RefreshToken(tokenDTO!.RefreshToken!, tokenDTO.JwtToken!));
+            return Ok(await _authService.RefreshToken(refreshTokenDTO!.RefreshToken!));
         }
     }
 }

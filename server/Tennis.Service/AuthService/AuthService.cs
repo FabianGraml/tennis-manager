@@ -39,11 +39,8 @@ public class AuthService : IAuthService
     }
     public async Task<TokenDTO> Login(LoginDTO loginDTO)
     {
-        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Email == loginDTO.Email, includes: q => q.Include(u => u.Role)!);
-        if (user == null)
-        {
-            throw new ApplicationException("User cannot be found");
-        }
+        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Email == loginDTO.Email, includes: q => q.Include(u => u.Role)!)
+            ?? throw new ApplicationException("User cannot be found");
         if (!await VerifyPasswordHash(loginDTO?.Password!, user?.PasswordHash!, user?.PasswordSalt!))
         {
             throw new ApplicationException("Wrong password");
@@ -57,15 +54,11 @@ public class AuthService : IAuthService
         };
         return tokenDTO;
     }
-    public async Task<TokenDTO> RefreshToken(string refreshToken, string jwtToken)
+    public async Task<TokenDTO> RefreshToken(string refreshToken)
     {
-        JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-        JwtSecurityToken jwtSecurityToken = handler.ReadJwtToken(jwtToken);
-
-        string userId = jwtSecurityToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Id == int.Parse(userId), includes: q => q.Include(u => u.Role)!);
-
-        if (!user!.RefreshToken.Equals(refreshToken))
+        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.RefreshToken == refreshToken, includes: q => q.Include(u => u.Role)!);
+       
+        if (user == null || user!.RefreshToken.Equals(refreshToken) == false)
         {
             throw new ApplicationException("Invalid Refresh Token");
         }

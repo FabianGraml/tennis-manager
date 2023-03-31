@@ -6,5 +6,5 @@ public interface IAuthService
 {
     Task<User> Register(RegisterDTO registerDTO);
     Task<TokenDTO> Login(LoginDTO loginDTO);
-    Task<TokenDTO> RefreshToken(string refreshToken, string jwtToken);
+    Task<TokenDTO> RefreshToken(string refreshToken);
 }
