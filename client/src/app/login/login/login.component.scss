@@ -1,0 +1,39 @@
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  form {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  input.form-control {
+    border-radius: 5px;
+    
+  }
+  
+  button.btn-primary {
+    margin-top: 10px;
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+  }
+  
+  button.btn-primary:hover {
+    background-color: #3e8e41;
+    border-color: #3e8e41;
+  }
+  .form-group{
+    margin-top: 10px;
+  }
+  a{
+    font-size: 12px;
+    text-decoration: underline;
+  }
