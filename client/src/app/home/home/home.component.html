@@ -1,1 +1,39 @@
-<p>home works!</p>
+<app-header></app-header>
+<div class="week-navigation">
+  <label for="week">Week: {{selectedWeek}}</label>
+  <button (click)="selectedWeek = selectedWeek - 1">Previous</button>
+  <button (click)="selectedWeek = selectedWeek + 1">Next</button>
+</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Hour</th>
+        <th *ngFor="let day of daysOfWeek">{{ day }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hour of hours">
+        <td>{{ hour }}:00</td>
+        <td *ngFor="let day of daysOfWeek; index as i" [class.booked]="isBooked(i + 1, hour, selectedWeek)" (click)="onCellClick(i + 1, hour)">
+            {{ findBooking(i + 1, hour, selectedWeek)?.user.firstname || '' }}
+          </td>
+        </tr>
+    </tbody>
+    </table>
+    <form (ngSubmit)="onSubmit()">
+        <div>
+          <label for="dayOfWeek">Day of Week:</label>
+          <select id="dayOfWeek" [(ngModel)]="bookingForm.dayOfWeek" name="dayOfWeek">
+            <option *ngFor="let day of daysOfWeek; index as i" [value]="i + 1">{{ day }}</option>
+          </select>
+        </div>
+        <div>
+          <label for="hour">Hour:</label>
+          <input type="number" id="hour" [(ngModel)]="bookingForm.hour" name="hour" min="7" max="21" />
+        </div>
+        <div>
+          <label for="week">Week:</label>
+          <input type="number" id="week" [(ngModel)]="bookingForm.week" name="week" min="{{ getCurrentWeekNumber() }}" max="52" />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
