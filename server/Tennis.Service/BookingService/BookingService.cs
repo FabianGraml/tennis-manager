@@ -74,7 +74,7 @@ public class BookingService : IBookingService
     }
     public async Task<BookingDTO.BookingResponseDTO?> GetById(int id)
     {
-        Booking? booking = await _unitOfWork.BookingRepository.GetIncludingAsync(x => x.Id == id, x => x.Include(y => y.User));
+        Booking? booking = await _unitOfWork.BookingRepository.GetIncludingAsync(x => x.Id == id, x => x.Include(y => y.User)!);
         if (booking == null)
         {
             throw new ArgumentException($"Couldn't find booking with ID {id}");
@@ -101,9 +101,9 @@ public class BookingService : IBookingService
         {
             throw new ArgumentException($"Booking with Id {id} could not be found");
         }
-        booking.Week = bookingDTO?.Week == null ? -1 : booking.Week;
-        booking.DayOfWeek = bookingDTO?.DayOfWeek == null ? -1 : booking.DayOfWeek;
-        booking.Hour = bookingDTO?.Hour == null ? -1 : booking.Hour;
+        booking.Week = bookingDTO?.Week == null ? -1 : bookingDTO.Week;
+        booking.DayOfWeek = bookingDTO?.DayOfWeek == null ? -1 : bookingDTO.DayOfWeek;
+        booking.Hour = bookingDTO?.Hour == null ? -1 : bookingDTO.Hour;
         booking.UserId = bookingDTO?.UserId == null ? -1 : bookingDTO.UserId;
         _unitOfWork.BookingRepository.Update(booking);
         await _unitOfWork.SaveAsync();

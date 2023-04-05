@@ -154,7 +154,6 @@ namespace Tennis.Database.Migrations
                 {
                     b.Navigation("Users");
                 });
-#pragma warning restore 612, 618
         }
     }
 }

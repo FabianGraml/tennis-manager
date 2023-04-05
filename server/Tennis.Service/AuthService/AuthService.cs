@@ -57,7 +57,7 @@ public class AuthService : IAuthService
     public async Task<TokenDTO> RefreshToken(string refreshToken)
     {
         User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.RefreshToken == refreshToken, includes: q => q.Include(u => u.Role)!);
-       
+
         if (user == null || user!.RefreshToken.Equals(refreshToken) == false)
         {
             throw new ApplicationException("Invalid Refresh Token");
