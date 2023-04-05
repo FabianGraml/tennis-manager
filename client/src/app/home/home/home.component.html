@@ -20,20 +20,3 @@
         </tr>
     </tbody>
     </table>
-    <form (ngSubmit)="onSubmit()">
-        <div>
-          <label for="dayOfWeek">Day of Week:</label>
-          <select id="dayOfWeek" [(ngModel)]="bookingForm.dayOfWeek" name="dayOfWeek">
-            <option *ngFor="let day of daysOfWeek; index as i" [value]="i + 1">{{ day }}</option>
-          </select>
-        </div>
-        <div>
-          <label for="hour">Hour:</label>
-          <input type="number" id="hour" [(ngModel)]="bookingForm.hour" name="hour" min="7" max="21" />
-        </div>
-        <div>
-          <label for="week">Week:</label>
-          <input type="number" id="week" [(ngModel)]="bookingForm.week" name="week" min="{{ getCurrentWeekNumber() }}" max="52" />
-        </div>
-        <button type="submit">Submit</button>
-      </form>

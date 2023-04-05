@@ -7,7 +7,9 @@ import { AppComponent } from './app.component';
 import { HomeModule } from './home/home.module';
 import { LoginModule } from './login/login.module';
 import { RegisterModule } from './register/register.module';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { BASE_PATH as TENNIS_SERVICE_BASE_PATH } from 'src/app/core/api/tennis-service';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { BASE_PATH as TENNIS_SERVICE_BASE_PATH } from 'src/app/core/api/tennis-s
     BrowserModule,
     RegisterModule,
     HttpClientModule,
+    FormsModule,
+    NgbModule,
     LoginModule,
     HomeModule,
     AppRoutingModule

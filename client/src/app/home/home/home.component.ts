@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { BookingRequestDTO, BookingsService } from 'src/app/core/api/tennis-service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  BookingRequestDTO,
+  BookingsService,
+} from 'src/app/core/api/tennis-service';
 import { TokenHandlerService } from 'src/app/core/services/token-handler.service';
+import { AddBookingComponent } from 'src/app/shared/components/add-booking/add-booking.component';
 
 @Component({
   selector: 'app-home',
@@ -18,20 +23,7 @@ export class HomeComponent implements OnInit {
     'Sat',
     'Sun',
   ];
-  public bookings: any[] = [
-    {
-      id: 1,
-      week: 11,
-      dayOfWeek: 2,
-      hour: 18,
-      user: {
-        id: 1,
-        firstname: 'Fabian',
-        lastname: 'Graml',
-        email: 'f.graml@gmx.at',
-      },
-    },
-  ];
+  public bookings: any[] = [];
   public selectedWeek: number = this.getCurrentWeekNumber();
   public bookingForm = {
     week: this.selectedWeek,
@@ -39,15 +31,24 @@ export class HomeComponent implements OnInit {
     hour: 7,
   };
 
-  constructor(private tokenHandler: TokenHandlerService, private bookingService: BookingsService) {
-    
-  }
+  constructor(
+    private tokenHandler: TokenHandlerService,
+    private bookingService: BookingsService,
+    private modalService: NgbModal
+  ) {}
   ngOnInit(): void {
     this.selectedWeek = this.getCurrentWeekNumber();
     this.getAllBookings();
   }
   findBooking(dayOfWeek: number, hour: number, week: number): any {
-    return this.bookings.find((booking) => booking.dayOfWeek === dayOfWeek && booking.hour === hour && booking.week === week);
+    
+    return this.bookings.find(
+      (booking) =>
+        booking.dayOfWeek === dayOfWeek &&
+        booking.hour === hour &&
+        booking.week === week
+    );
+
   }
   getCurrentWeekNumber(): number {
     const now = new Date();
@@ -61,51 +62,59 @@ export class HomeComponent implements OnInit {
     return weekNumber;
   }
 
-  isBooked(dayOfWeek: number, hour: number, week: number): any {
-    return this.bookings.find((booking) => booking.dayOfWeek === dayOfWeek && booking.hour === hour && booking.week === week);
+  public isBooked(dayOfWeek: number, hour: number, week: number): any {
+    const booking = this.bookings.find(
+      (booking) =>
+        booking && booking.dayOfWeek === dayOfWeek &&
+        booking.hour === hour &&
+        booking.week === week
+    );
+    return !!booking;
   }
-
   onCellClick(dayOfWeek: number, hour: number): void {
     if (!this.isBooked(dayOfWeek, hour, this.selectedWeek)) {
       this.bookingForm.dayOfWeek = dayOfWeek;
       this.bookingForm.hour = hour;
     }
+    this.openDialog();
   }
 
-  onSubmit(): void {
-    if (
-      this.bookingForm.week === this.selectedWeek &&
-      this.bookingForm.dayOfWeek < new Date().getDay()
-    ) {
-      console.error('Cannot book a past date in the current week');
-      return;
-    }
-    const userIdString: string | null = this.tokenHandler.getUserId();
-    const userId: number | undefined = userIdString ? parseInt(userIdString, 10) : undefined;    var bookingRequesDTO : BookingRequestDTO = {
-      dayOfWeek: this.bookingForm.dayOfWeek,
-      hour: this.bookingForm.hour,
-      week: this.bookingForm.week,
-      userId: userId
-    }
-    this.bookingService.apiBookingAddPost(bookingRequesDTO).subscribe({
-      next: (data) => {
-        console.log(data);
-        this.getAllBookings();
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-  }
+  onSubmit(): void {}
   getAllBookings(): void {
     this.bookingService.apiBookingAllGet().subscribe({
       next: (data) => {
         this.bookings = data;
-        console.log(data);
       },
       error: (error) => {
         console.error(error);
-      }
+      },
     });
   }
+openDialog() {
+    const modalRef = this.modalService.open(AddBookingComponent);
+    modalRef.componentInstance.bookingForm = {
+      dayOfWeek: this.bookingForm.dayOfWeek,
+      hour: this.bookingForm.hour,
+      week: this.bookingForm.week
+    };
+    modalRef.result.then((result) => {
+      const booking: BookingRequestDTO = {
+        dayOfWeek: result.dayOfWeek,
+        hour: result.hour,
+        week: result.week,
+        userId: Number(this.tokenHandler.getUserId()) || undefined
+      };
+      this.bookingService.apiBookingAddPost(booking).subscribe({
+        next: (data) => {
+          this.getAllBookings();
+          this.bookings.push(data);
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
+    }).catch((reason) => {
+      console.log('***Modal closed***');
+    });
+  }  
 }
