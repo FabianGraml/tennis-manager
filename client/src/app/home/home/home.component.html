@@ -4,6 +4,7 @@
   <button (click)="selectedWeek = selectedWeek - 1">Previous</button>
   <button (click)="selectedWeek = selectedWeek + 1">Next</button>
 </div>
+<div class="table-container">
   <table>
     <thead>
       <tr>
@@ -14,9 +15,44 @@
     <tbody>
       <tr *ngFor="let hour of hours">
         <td>{{ hour }}:00</td>
-        <td *ngFor="let day of daysOfWeek; index as i" [class.booked]="isBooked(i + 1, hour, selectedWeek)" (click)="onCellClick(i + 1, hour)">
-            {{ findBooking(i + 1, hour, selectedWeek)?.user.firstname || '' }}
+        <td 
+        *ngFor="let day of daysOfWeek; index as i" 
+        [class.booked]="isBooked(i + 1, hour, selectedWeek)" 
+        [attr.disabled]="isBooked(i + 1, hour, selectedWeek) ? true : null"
+        (click)="!isBooked(i + 1, hour, selectedWeek) && onCellClick(i + 1, hour)"
+      >
+            {{ findBooking(i + 1, hour, selectedWeek)?.user.firstname  || '' }}
+            {{ findBooking(i + 1, hour, selectedWeek)?.user.firstname  || '' }}
+
           </td>
         </tr>
     </tbody>
     </table>
+  </div>
+  <div class="mobile-container">
+    <div class="day-navigation">
+      <label for="day">Day: {{daysOfWeek[selectedDay - 1]}}</label>
+      <button (click)="selectedDay = (selectedDay === 1 ? 7 : selectedDay - 1)">Previous</button>
+      <button (click)="selectedDay = (selectedDay === 7 ? 1 : selectedDay + 1)">Next</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Hour</th>
+          <th>{{ daysOfWeek[selectedDay - 1] }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let hour of hours">
+          <td>{{ hour }}:00</td>
+          <td 
+            [class.booked]="isBooked(selectedDay, hour, selectedWeek)" 
+            [attr.disabled]="isBooked(selectedDay, hour, selectedWeek) ? true : null"
+            (click)="!isBooked(selectedDay, hour, selectedWeek) && onCellClick(selectedDay, hour)"
+          >
+            {{ findBooking(selectedDay, hour, selectedWeek)?.user.firstname || '' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

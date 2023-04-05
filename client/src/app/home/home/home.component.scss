@@ -1,99 +1,152 @@
 table {
-    width: 100%;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+  max-width: 0px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.booked {
+  background-color: #f9c1c1;
+  cursor: not-allowed;
+}
+
+.week-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+label {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 10px;
+}
+
+input[type='number'] {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 60px;
+  height: 30px;
+}
+
+button {
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  margin: 0 5px;
+  height: 30px;
+  line-height: 1.2;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
   }
-  
+}
+@media screen and (max-width: 768px) {
   th,
   td {
-    border: 1px solid #ccc;
-    text-align: center;
-    padding: 8px;
+    font-size: 12px;
+    padding: 6px;
   }
-  
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  .booked {
-    background-color: #f9c1c1;
-    cursor: not-allowed;
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    max-width: 400px;
-    margin: 20px auto;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  }
-  
+
   label {
     font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 5px;
   }
-  
-  input,
-  select {
-    padding: 10px;
+
+  input[type='number'] {
+    font-size: 12px;
+    width: 40px;
+    height: 25px;
+  }
+
+  button {
+    font-size: 12px;
+    padding: 3px 6px;
+    height: 25px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  th,
+  td {
+    font-size: 10px;
+    padding: 4px;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  input[type='number'] {
+    font-size: 10px;
+    width: 30px;
+    height: 20px;
+  }
+
+  button {
+    font-size: 10px;
+    padding: 2px 4px;
+    height: 20px;
+  }
+}
+.table-container {
+  display: block;
+}
+
+.mobile-container {
+  display: none;
+}
+@media screen and (max-width: 576px) {
+  .table-container {
+    display: none;
+  }
+  .mobile-container {
+    display: block;
+  }
+}
+@media screen and (max-width: 576px) {
+  th,
+  td {
     font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    padding: 8px;
   }
-  
-  button[type='submit'] {
-    cursor: pointer;
-    padding: 10px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-  
-    &:hover {
-      background-color: #0056b3;
-    }
+
+  label {
+    font-size: 16px; 
   }
-  .week-navigation {
+
+  input[type='number'] {
+    font-size: 12px;
+    width: 30px;
+    height: 20px;
+  }
+
+  button {
+    font-size: 14px; 
+    padding: 6px 12px; 
+    height: 28px;
+  }
+
+  .day-navigation {
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 20px 0;
   }
-  
-  label {
-    font-size: 18px;
-    font-weight: 500;
-    margin: 0 10px;
-
-  }
-  
-  input[type='number'] {
-    padding: 5px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 60px;
-    height: 30px;
-  }
-  
-  button {
-    cursor: pointer;
-    padding: 5px 10px;
-    font-size: 14px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    margin: 0 5px;
-    height: 30px;
-    line-height: 1.2;
-    transition: all 0.3s ease;
-  
-    &:hover {
-      background-color: #0056b3;
-    }
-  }
+}

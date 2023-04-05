@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
     'Sat',
     'Sun',
   ];
+  public selectedDay: number = 1;
   public bookings: any[] = [];
   public selectedWeek: number = this.getCurrentWeekNumber();
   public bookingForm = {
