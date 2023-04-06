@@ -30,7 +30,7 @@ export class LoginComponent {
     };
     this.authService.apiAuthLoginPost(loginDTO).subscribe({
       next: (data) => {
-        const tokenDTO = data as TokenDTO;
+        const tokenDTO = data.success as TokenDTO;
         this.tokenHandlerService.saveToken(tokenDTO.jwtToken!);
         this.tokenHandlerService.saveRefreshToken(tokenDTO.refreshToken!);
         this.tokenHandlerService.saveUserId(tokenDTO.jwtToken!);

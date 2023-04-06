@@ -2,16 +2,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Reflection;
 using System.Text;
+using Tennis.Api.Middleware;
 using Tennis.Database.Context;
 using Tennis.Repository.UnitOfWork;
 using Tennis.Service.AppSettingsService;
 using Tennis.Service.AppSettingsService.AppSettings;
 using Tennis.Service.AuthService;
 using Tennis.Service.BookingService;
-
 string corsKey = "_mySecretCorsKey";
 var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -34,7 +33,7 @@ builder.Services.AddSwaggerGen(x =>
 // Configure appsettings.json DbContext
 string baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 AppDomain.CurrentDomain.SetData("DataDirectory", baseDirectory);
-string connectionString = configuration.GetConnectionString("TennisDb")!
+string connectionString = builder.Configuration.GetConnectionString("TennisDb")!
     .Replace("|DataDirectory|", AppDomain.CurrentDomain
     .GetData("DataDirectory")!
     .ToString());
@@ -78,7 +77,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
+app.UseMiddleware<ResultHandlingMiddleware>();
 // Migrate Database
 // Apply Migrations using this command
 // Add-Migration [Name] -StartupProject Tennis.Api -Context TennisContext -Project Tennis.Database

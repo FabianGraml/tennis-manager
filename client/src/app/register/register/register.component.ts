@@ -24,6 +24,7 @@ export class RegisterComponent {
     };
     this.authService.apiAuthRegisterPost(registerDTO).subscribe({
       next: (data) => {
+        console.log(data);
         this.router.navigateByUrl('/login');
       },
       error: (error) => {

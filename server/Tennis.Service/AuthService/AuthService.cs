@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using Tennis.Database.Models;
 using Tennis.Model.DTOs;
 using Tennis.Model.Helpers;
+using Tennis.Model.Models;
+using Tennis.Model.Results;
 using Tennis.Repository.UnitOfWork;
 using Tennis.Service.AppSettingsService;
 using Tennis.Service.AppSettingsService.AppSettings;
@@ -20,8 +22,14 @@ public class AuthService : IAuthService
         _unitOfWork = unitOfWork;
         _settingsService = settingsService;
     }
-    public async Task<User> Register(RegisterDTO registerDTO)
+    public async Task<Result<ResponseModel, ResponseModel>> Register(RegisterDTO registerDTO)
     {
+        User? existingUser = await _unitOfWork.UserRepository.GetAsync(x => x.Email == registerDTO.Email);
+        if (existingUser != null)
+        {
+            return Result<ResponseModel, ResponseModel>.FromFailure(
+           new ResponseModel("User with given Email already exist"), 400);
+        }
         CreatePasswordHash(registerDTO?.Password!, out byte[] passwordHash, out byte[] passwordSalt);
         User user = new()
         {
@@ -35,45 +43,53 @@ public class AuthService : IAuthService
         };
         await _unitOfWork.UserRepository.AddAsync(user);
         await _unitOfWork.SaveAsync();
-        return user;
+        return Result<ResponseModel, ResponseModel>.FromSuccess(
+               new ResponseModel("User registered successfully"), 200);
     }
-    public async Task<TokenDTO> Login(LoginDTO loginDTO)
+    public async Task<Result<TokenDTO, ResponseModel>> Login(LoginDTO loginDTO)
     {
-        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Email == loginDTO.Email, includes: q => q.Include(u => u.Role)!)
-            ?? throw new ApplicationException("User cannot be found");
+        User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.Email == loginDTO.Email, includes: q => q.Include(u => u.Role)!);
+        if (user == null)
+        {
+            return Result<TokenDTO, ResponseModel>.FromFailure(
+                   new ResponseModel("User cannot be found"), 400);
+        }
         if (!await VerifyPasswordHash(loginDTO?.Password!, user?.PasswordHash!, user?.PasswordSalt!))
         {
-            throw new ApplicationException("Wrong password");
+            return Result<TokenDTO, ResponseModel>.FromFailure(
+                   new ResponseModel("Wrong password"), 400);
         }
         var refreshToken = await GenerateRefreshToken();
         await SetRefreshToken(refreshToken, user!);
-        TokenDTO tokenDTO = new()
+
+        return Result<TokenDTO, ResponseModel>.FromSuccess(new TokenDTO
         {
             JwtToken = await CreateToken(user!),
             RefreshToken = refreshToken.Token,
-        };
-        return tokenDTO;
+        }, 200);
     }
-    public async Task<TokenDTO> RefreshToken(string refreshToken)
+    public async Task<Result<TokenDTO, ResponseModel>> RefreshToken(string refreshToken)
     {
         User? user = await _unitOfWork.UserRepository.GetIncludingAsync(x => x.RefreshToken == refreshToken, includes: q => q.Include(u => u.Role)!);
 
         if (user == null || user!.RefreshToken.Equals(refreshToken) == false)
         {
-            throw new ApplicationException("Invalid Refresh Token");
+            return Result<TokenDTO, ResponseModel>.FromFailure(
+                   new ResponseModel("Invalid Refresh Token"), 400);
         }
         else if (user.TokenExpires < DateTime.Now)
         {
-            throw new ApplicationException("Token expired");
+            return Result<TokenDTO, ResponseModel>.FromFailure(
+                   new ResponseModel("Token expired"), 400);
         }
         string token = await CreateToken(user);
         var newRefreshToken = await GenerateRefreshToken();
         await SetRefreshToken(newRefreshToken, user);
-        return new TokenDTO
+        return Result<TokenDTO, ResponseModel>.FromSuccess(new TokenDTO
         {
             JwtToken = token,
-            RefreshToken = newRefreshToken.Token
-        };
+            RefreshToken = newRefreshToken.Token,
+        }, 200);
     }
     private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {

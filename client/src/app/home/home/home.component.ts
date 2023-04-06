@@ -45,9 +45,9 @@ export class HomeComponent implements OnInit {
     
     return this.bookings.find(
       (booking) =>
-        booking.dayOfWeek === dayOfWeek &&
-        booking.hour === hour &&
-        booking.week === week
+        booking?.dayOfWeek === dayOfWeek &&
+        booking?.hour === hour &&
+        booking?.week === week
     );
 
   }
@@ -115,7 +115,6 @@ openDialog() {
         },
       });
     }).catch((reason) => {
-      console.log('***Modal closed***');
     });
   }  
 }

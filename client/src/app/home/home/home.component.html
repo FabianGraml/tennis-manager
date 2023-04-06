@@ -22,7 +22,7 @@
         (click)="!isBooked(i + 1, hour, selectedWeek) && onCellClick(i + 1, hour)"
       >
             {{ findBooking(i + 1, hour, selectedWeek)?.user.firstname  || '' }}
-            {{ findBooking(i + 1, hour, selectedWeek)?.user.firstname  || '' }}
+            {{ findBooking(i + 1, hour, selectedWeek)?.user.lastname  || '' }}
 
           </td>
         </tr>
