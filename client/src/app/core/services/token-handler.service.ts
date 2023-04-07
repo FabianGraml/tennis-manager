@@ -31,6 +31,16 @@ export class TokenHandlerService {
   public getRefreshToken(): string | null {
     return window.sessionStorage.getItem(REFRESH_TOKEN_KEY);
   }
+  public getEmailFromToken(): string | null {
+    const token = this.getToken();
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload[
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
+      ];
+    }
+    return null;
+  }
   public getToken(): string | null {
     return window.sessionStorage.getItem(JWT_TOKEN_KEY);
   }
@@ -39,5 +49,9 @@ export class TokenHandlerService {
     return payload[
       'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
     ];
+  }
+  public isUserLoggedIn(): boolean {
+    let user = this.getToken();
+    return !(user === null);
   }
 }

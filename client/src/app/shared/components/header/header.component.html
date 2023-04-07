@@ -6,6 +6,7 @@
       <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/account">Account</a></li>
+        <li *ngIf="isUserLoggedIn"><a (click)="logout()">Logout ({{email}})</a></li>
       </ul>
     </nav>
   </header>
