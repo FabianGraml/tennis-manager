@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -12,10 +12,12 @@ import { BASE_PATH as TENNIS_SERVICE_BASE_PATH } from 'src/app/core/api/tennis-s
 import { FormsModule } from '@angular/forms';
 import { AccountModule } from './account/account.module';
 import { CoreModule } from './core/core.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GlobalErrorService } from './core/services/global-error.service';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,10 +29,13 @@ import { CoreModule } from './core/core.module';
     CoreModule,
     LoginModule,
     HomeModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule
   ],
   providers: [
     {provide : TENNIS_SERVICE_BASE_PATH, useValue: 'https://localhost:5001'},
+    {provide: ErrorHandler, useClass: GlobalErrorService}
+
   ],
   bootstrap: [AppComponent]
 })

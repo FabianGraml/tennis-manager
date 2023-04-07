@@ -84,10 +84,10 @@ export class HomeComponent implements OnInit {
   getAllBookings(): void {
     this.bookingService.apiBookingAllGet().subscribe({
       next: (data) => {
-        this.bookings = data;
+        this.bookings = data.success;
       },
       error: (error) => {
-        console.error(error);
+        throw error;
       },
     });
   }
@@ -108,10 +108,10 @@ openDialog() {
       this.bookingService.apiBookingAddPost(booking).subscribe({
         next: (data) => {
           this.getAllBookings();
-          this.bookings.push(data);
+          this.bookings.push(data.success);
         },
         error: (error) => {
-          console.error(error);
+          throw error;
         },
       });
     }).catch((reason) => {

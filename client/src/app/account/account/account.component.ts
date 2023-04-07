@@ -25,10 +25,10 @@ export class AccountComponent implements OnInit {
     const userId = Number(this.tokenHandler.getUserId());
     this.bookingService.apiBookingPersonGet(userId).subscribe({
       next: (data) => {
-        this.userBookings = data;
+        this.userBookings = data.success;
       },
       error: (error) => {
-        console.error(error);
+        throw error;
       },
     });
   }
@@ -54,7 +54,7 @@ export class AccountComponent implements OnInit {
             this.getUserBookings();
           },
           error: (error) => {
-            console.error(error);
+            throw error;
           },
         });
       })
@@ -64,13 +64,12 @@ export class AccountComponent implements OnInit {
   }
   deleteBooking(bookingId: number): void {
     this.bookingService.apiBookingRemoveDelete(bookingId).subscribe({
-      next: () => {
+      next: (data) => {
         this.getUserBookings();
       },
       error: (error) => {
-        console.error(error);
+        throw error;
       },
     });
   }
-
 }

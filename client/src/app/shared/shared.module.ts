@@ -3,22 +3,23 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { FormsModule } from '@angular/forms';
 import { AddBookingComponent } from './components/add-booking/add-booking.component';
-import { ToastComponent } from './components/toast/toast.component';
+import { MaterialModule } from './material/material.module';
 
 
 @NgModule({
   declarations: [
     HeaderComponent,
     AddBookingComponent,
-    ToastComponent
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    MaterialModule,
   ],
   exports: [
     AddBookingComponent,
-    HeaderComponent
+    HeaderComponent,
+    MaterialModule,
   ]
 })
 export class SharedModule { }

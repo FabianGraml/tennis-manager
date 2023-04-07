@@ -31,6 +31,7 @@ export class JwtInterceptor implements HttpInterceptor {
           };
           return this.authService.apiAuthRefreshTokenPost(tokenDTO).pipe(
             switchMap((data: TokenDTO) => {
+              console.log(data);
               this.tokenHandlerService.saveToken(data.jwtToken!);
               this.tokenHandlerService.saveRefreshToken(data.refreshToken!);
               this.tokenHandlerService.saveUserId(data.jwtToken!);
@@ -45,7 +46,6 @@ export class JwtInterceptor implements HttpInterceptor {
               );
             }),
             catchError((error) => {
-              console.log(error);
               return throwError(error);
             })
           );
