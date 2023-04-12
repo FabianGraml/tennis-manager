@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,10 +18,12 @@ public class AuthService : IAuthService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAppSettingsService<AppSettingsConfig> _settingsService;
-    public AuthService(IUnitOfWork unitOfWork, IAppSettingsService<AppSettingsConfig> settingsService)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public AuthService(IUnitOfWork unitOfWork, IAppSettingsService<AppSettingsConfig> settingsService, IHttpContextAccessor httpContextAccessor)
     {
         _unitOfWork = unitOfWork;
         _settingsService = settingsService;
+        _httpContextAccessor = httpContextAccessor;
     }
     public async Task<Result<ResponseModel, ResponseModel>> Register(RegisterDTO registerDTO)
     {
@@ -91,6 +94,20 @@ public class AuthService : IAuthService
             RefreshToken = newRefreshToken.Token,
         }, 200);
     }
+    public async Task<Result<ResponseModel, ResponseModel>> Logout(string refreshToken)
+    {
+        string? userId = await GetClaimValueByToken("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+        User? user = await _unitOfWork.UserRepository.GetAsync(x => x.RefreshToken == refreshToken && x.Id == int.Parse(userId));
+        if(user == null)
+        {
+            return Result<ResponseModel, ResponseModel>.FromFailure(
+                   new ResponseModel("Invalid Jwt Token or Username"), 400);
+        }
+        user.TokenExpires = DateTime.Now;
+        await _unitOfWork.SaveAsync();
+        return Result<ResponseModel, ResponseModel>.FromFailure(
+                   new ResponseModel("Logout was successful"), 200);
+    }
     private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         var hmac = new HMACSHA512();
@@ -142,5 +159,17 @@ public class AuthService : IAuthService
         user.TokenExpires = newRefreshToken.Expires;
         _unitOfWork.UserRepository.Update(user);
         await _unitOfWork.SaveAsync();
+    }
+    public Task<string> GetClaimValueByToken(string claimType)
+    {
+        HttpRequest? request = _httpContextAccessor.HttpContext!.Request;
+        string jwt = string.Empty;
+        string authHeader = request.Headers["Authorization"].ToString();
+        if (authHeader != null && authHeader.StartsWith("Bearer "))
+            jwt = authHeader[7..];
+        JwtSecurityTokenHandler tokenHandler = new();
+        JwtSecurityToken token = tokenHandler.ReadJwtToken(jwt);
+        string claimValue = token.Claims.First(claim => claim.Type == claimType).Value;
+        return Task.FromResult(claimValue);
     }
 }

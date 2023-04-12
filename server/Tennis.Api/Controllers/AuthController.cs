@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Tennis.Model.DTOs;
-using Tennis.Model.Models;
-using Tennis.Model.Results;
 using Tennis.Service.AuthService;
 namespace Tennis.Api.Controllers;
 [Route("api/auth")]
@@ -13,19 +12,25 @@ public class AuthController : BaseController
     {
         _authService = authService;
     }
-    [HttpPost("Register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDTO registerDTO)
     {
         return await ExecuteAsync(_authService.Register(registerDTO));
     }
-    [HttpPost("Login")]
+    [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDTO loginDTO)
     {
         return await ExecuteAsync(_authService.Login(loginDTO));
     }
-    [HttpPost("RefreshToken")]
+    [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO? refreshTokenDTO)
     {
         return await ExecuteAsync(_authService.RefreshToken(refreshTokenDTO!.RefreshToken!));
+    }
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] RefreshTokenDTO? refreshTokenDTO)
+    {
+        return await ExecuteAsync(_authService.Logout(refreshTokenDTO!.RefreshToken!));
     }
 }

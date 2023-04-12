@@ -19,15 +19,22 @@ export class AuthGuard implements CanActivate {
   
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const jwtToken = this.tokenHandler.getToken();
     const refreshToken = this.tokenHandler.getRefreshToken();
     const isExpired = this.isJwtTokenExpired(jwtToken!);
-    if(!jwtToken && !refreshToken){
-      this.router.navigate(['/login'], {queryParams: {returnUrl: state.url}});
+  
+    if (!jwtToken && !refreshToken) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
       return of(false);
     }
+  
     if (!jwtToken || isExpired) {
+      if (!refreshToken) {
+        this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+        return of(false);
+      }
       const tokenDTO: RefreshTokenDTO = {
         refreshToken: refreshToken,
       };
@@ -39,15 +46,14 @@ export class AuthGuard implements CanActivate {
           return true;
         }),
         catchError((error) => {
-          throw error;
-          this.router.navigate(['/login'], {queryParams: {returnUrl: state.url}});
+          this.tokenHandler.signOut();
+          this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
           return of(false);
         })
       );
     }
     return of(true);
   }
-
   isJwtTokenExpired(token: string): boolean {
     if (!token) {
       return true;

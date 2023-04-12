@@ -26,8 +26,12 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(authreq).pipe(
       catchError((err) => {
         if (err.status === 401) {
+          const refreshToken = this.tokenHandlerService.getRefreshToken();
+          if (!refreshToken) {
+            return throwError(new Error('Refresh token not found'));
+          }
           const tokenDTO: RefreshTokenDTO = {
-            refreshToken: this.tokenHandlerService.getRefreshToken(),
+            refreshToken: refreshToken,
           };
           return this.authService.apiAuthRefreshTokenPost(tokenDTO).pipe(
             switchMap((data: TokenDTO) => {

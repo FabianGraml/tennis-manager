@@ -16,7 +16,7 @@ export class AccountComponent implements OnInit {
   constructor(
     private tokenHandler: TokenHandlerService,
     private bookingService: BookingsService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) { }
   ngOnInit(): void {
     this.getUserBookings();
